@@ -1,0 +1,52 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccountPrefix": {
+            "type": "string",
+            "defaultValue": "calab"
+        },
+        "accountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS"
+        },
+        "httpsTrafficOnlyEnabled": {
+            "type": "bool",
+            "defaultValue": "true"
+        },
+        "encrypted": {
+            "type": "bool",
+            "defaultValue": "false"
+        }
+    },
+    "variables": {
+        "storageAccountName": "[concat(parameters('storageAccountPrefix'), uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-06-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[resourceGroup().location]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "[parameters('accountType')]"
+            },
+            "kind": "Storage",
+            "properties": {
+                "supportsHttpsTrafficOnly": "[parameters('httpsTrafficOnlyEnabled')]",
+                "encryption": {
+                    "services": {
+                        "blob": {
+                            "enabled": "[parameters('encrypted')]"
+                        },
+                        "file": {
+                            "enabled": "[parameters('encrypted')]"
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}
