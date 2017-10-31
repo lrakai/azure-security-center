@@ -30,9 +30,9 @@
             "type": "string",
             "defaultValue": "1Cloud_Academy_Labs!"
         },
-        "storageAccountName": {
+        "storageAccountPrefix": {
             "type": "string",
-            "defaultValue": "calabdisks01"
+            "defaultValue": "calabdisks"
         },
         "storageAccountType": {
             "type": "string",
@@ -65,7 +65,8 @@
     },
     "variables": {
         "vnetId": "[resourceId('ca-labs','Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "storageAccountName": "[replace(concat(parameters('storageAccountPrefix'), resourceGroup().name),'-', '')]"
     },
     "resources": [
         {
@@ -75,7 +76,7 @@
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]",
-                "[concat('Microsoft.Storage/storageAccounts/', replace(concat(parameters('storageAccountName'), resourceGroup().name),'-', ''))]"
+                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
             ],
             "properties": {
                 "osProfile": {
@@ -96,7 +97,7 @@
                     "osDisk": {
                         "createOption": "fromImage",
                         "vhd": {
-                            "uri": "[concat(concat(reference(resourceId('ca-labs', 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2015-06-15').primaryEndpoints['blob'], 'vhds/'), parameters('virtualMachineName'), '20171030220639.vhd')]"
+                            "uri": "[concat(concat(reference(resourceId('ca-labs', 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-06-15').primaryEndpoints['blob'], 'vhds/'), parameters('virtualMachineName'), '20171030220639.vhd')]"
                         },
                         "name": "[parameters('virtualMachineName')]"
                     },
@@ -112,7 +113,7 @@
             }
         },
         {
-          "name": "[replace(concat(parameters('storageAccountName'), resourceGroup().name),'-', '')]",
+          "name": "[variables('storageAccountName')]",
           "type": "Microsoft.Storage/storageAccounts",
           "apiVersion": "2015-06-15",
           "location": "[resourceGroup().location]",
