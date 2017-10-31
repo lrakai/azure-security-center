@@ -12,11 +12,11 @@
         },
         "httpsTrafficOnlyEnabled": {
             "type": "bool",
-            "defaultValue": "true"
+            "defaultValue": true
         },
         "encrypted": {
             "type": "bool",
-            "defaultValue": "false"
+            "defaultValue": false
         }
     },
     "variables": {
