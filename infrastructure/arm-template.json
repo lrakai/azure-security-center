@@ -60,7 +60,7 @@
         },
         "publicIpAddressSku": {
             "type": "string",
-            "value": "Basic"
+            "defaultvalue": "Basic"
         }
     },
     "variables": {
