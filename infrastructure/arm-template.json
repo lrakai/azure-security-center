@@ -13,10 +13,6 @@
         "httpsTrafficOnlyEnabled": {
             "type": "bool",
             "defaultValue": true
-        },
-        "encrypted": {
-            "type": "bool",
-            "defaultValue": false
         }
     },
     "variables": {
@@ -33,18 +29,7 @@
             },
             "kind": "Storage",
             "properties": {
-                "supportsHttpsTrafficOnly": "[parameters('httpsTrafficOnlyEnabled')]",
-                "encryption": {
-                    "services": {
-                        "blob": {
-                            "enabled": "[parameters('encrypted')]"
-                        },
-                        "file": {
-                            "enabled": "[parameters('encrypted')]"
-                        }
-                    },
-                    "keySource": "Microsoft.Storage"
-                }
+                "supportsHttpsTrafficOnly": "[parameters('httpsTrafficOnlyEnabled')]"
             },
             "dependsOn": []
         }
