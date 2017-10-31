@@ -32,7 +32,7 @@
         },
         "storageAccountPrefix": {
             "type": "string",
-            "defaultValue": "calabdisks"
+            "defaultValue": "calabdisks01"
         },
         "storageAccountType": {
             "type": "string",
