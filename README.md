@@ -12,7 +12,7 @@ An Azure RM template is included in `infrastructure/` to create the environment:
 
 Using Azure PowerShell, do the following to provision the resources:
 ```ps1
-.\startup.ps1
+.\scripts\startup.ps1
 ```
 Alternatively, you can perform a one-click deploy with the following button:
 
@@ -26,5 +26,5 @@ Navigate to Azure Security Center and follow it's recommendations until all secu
 ## Tearing Down
 When finished, remove the Azure resources with:
 ```ps1
-.\teardown.ps1
+.\scripts\teardown.ps1
 ```
