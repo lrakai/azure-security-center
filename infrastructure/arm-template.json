@@ -8,7 +8,11 @@
         },
         "virtualMachineSize": {
             "type": "string",
-            "defaultValue": "Basic_A1"
+            "defaultValue": "Standard_B1ms"
+        },
+        "osDiskType": {
+            "type": "string",
+            "defaultValue": "StandardSSD_LRS"
         },
         "adminUsername": {
             "type": "string",
@@ -72,11 +76,10 @@
         {
             "name": "[parameters('virtualMachineName')]",
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2016-04-30-preview",
+            "apiVersion": "2018-06-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]",
-                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]"
             ],
             "properties": {
                 "osProfile": {
@@ -89,19 +92,17 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "OpenLogic",
-                        "offer": "CentOS",
-                        "sku": "7.3",
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "18.04-LTS",
                         "version": "latest"
                     },
                     "osDisk": {
                         "createOption": "fromImage",
-                        "vhd": {
-                            "uri": "[concat(concat(reference(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-06-15').primaryEndpoints['blob'], 'vhds/'), parameters('virtualMachineName'), '20171030220639.vhd')]"
-                        },
-                        "name": "[parameters('virtualMachineName')]"
-                    },
-                    "dataDisks": []
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        }
+                    }
                 },
                 "networkProfile": {
                     "networkInterfaces": [
@@ -109,6 +110,12 @@
                             "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
                         }
                     ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net/')]"
+                    }
                 }
             }
         },
@@ -202,7 +209,27 @@
                     }
                 ]
             }
-        }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "OMSExtension",
+            "apiVersion": "2018-06-01",
+            "location": "<location>",
+            "dependsOn": [
+              "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+            ],
+            "properties": {
+              "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+              "type": "OmsAgentForLinux",
+              "typeHandlerVersion": "1.7",
+              "settings": {
+                "workspaceId": "myWorkspaceId"
+              },
+              "protectedSettings": {
+                "workspaceKey": "myWorkSpaceKey"
+              }
+            }
+          }
     ],
     "outputs": {
         "adminUsername": {
