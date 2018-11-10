@@ -34,6 +34,10 @@
             "type": "string",
             "defaultValue": "1Cloud_Academy_Labs!"
         },
+        "logAnalyticsAccountPrefix": {
+            "type": "string",
+            "defaultValue": "calabanalytics"
+        },
         "storageAccountPrefix": {
             "type": "string",
             "defaultValue": "calabdisks01"
@@ -70,7 +74,8 @@
     "variables": {
         "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
-        "storageAccountName": "[replace(concat(parameters('storageAccountPrefix'), resourceGroup().name),'-', '')]"
+        "storageAccountName": "[replace(concat(parameters('storageAccountPrefix'), resourceGroup().name),'-', '')]",
+        "workspaceName": "[concat(parameters('logAnalyticsAccountPrefix'), resourceGroup().name)]"
     },
     "resources": [
         {
@@ -120,13 +125,13 @@
             }
         },
         {
-          "name": "[variables('storageAccountName')]",
-          "type": "Microsoft.Storage/storageAccounts",
-          "apiVersion": "2015-06-15",
-          "location": "[resourceGroup().location]",
-          "properties": {
-            "accountType": "[parameters('storageAccountType')]"
-          }
+            "name": "[variables('storageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "accountType": "[parameters('storageAccountType')]"
+            }
         },
         {
             "name": "[parameters('virtualNetworkName')]",
@@ -211,25 +216,40 @@
             }
         },
         {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "name": "[variables('workspaceName')]",
+            "apiVersion": "2017-03-15-preview",
+            "location": "EastUS",
+            "properties": {
+                "sku": {
+                    "name": "Standalone"
+                },
+                "features": {
+                    "searchVersion": 1
+                }
+            }
+        },
+        {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "OMSExtension",
+            "name": "[concat(parameters('virtualMachineName'), '/Microsoft.EnterpriseCloud.Monitoring')]",
             "apiVersion": "2018-06-01",
-            "location": "<location>",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-              "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+                "[concat('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]",
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
             ],
             "properties": {
-              "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-              "type": "OmsAgentForLinux",
-              "typeHandlerVersion": "1.7",
-              "settings": {
-                "workspaceId": "myWorkspaceId"
-              },
-              "protectedSettings": {
-                "workspaceKey": "myWorkSpaceKey"
-              }
+                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                "type": "OmsAgentForLinux",
+                "typeHandlerVersion": "1.7",
+                "settings": {
+                    "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')), '2015-11-01-preview').customerId]"
+                },
+                "protectedSettings": {
+                    "workspaceKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')), '2015-11-01-preview').primarySharedKey]"
+                }
             }
-          }
+        }
     ],
     "outputs": {
         "adminUsername": {
