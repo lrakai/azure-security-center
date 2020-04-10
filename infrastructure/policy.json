@@ -8,7 +8,11 @@
               "Microsoft.Authorization/*/Delete",
               "Microsoft.Authorization/*/Write",
               "Microsoft.Authorization/elevateAccess/Action",
-              "Microsoft.MarketplaceOrdering/*"
+              "Microsoft.MarketplaceOrdering/*",
+              "Microsoft.Resources/tags/write",
+              "Microsoft.Resources/tags/delete",
+              "Microsoft.Compute/virtualMachines/write",
+              "Microsoft.Compute/disks/write"
           ]
       }
   ],
