@@ -11,9 +11,17 @@ An Azure RM template is included in `infrastructure/` to create the environment:
 </a> 
 
 Using Azure PowerShell, do the following to provision the resources:
+
 ```ps1
-.\scripts\startup.ps1
+.\New-Lab.ps1
 ```
+
+Using Azure CLI, do the following to provision the resources:
+
+```ps1
+./new_lab.sh
+```
+
 Alternatively, you can perform a one-click deploy with the following button:
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Flrakai%2Fazure-security-center%2Fmaster%2Finfrastructure%2Farm-template.json">
@@ -21,10 +29,21 @@ Alternatively, you can perform a one-click deploy with the following button:
 </a>
 
 ## Following Along
+
 Navigate to Azure Security Center and follow it's recommendations until all security risks are resolved.
 
 ## Tearing Down
+
 When finished, remove the Azure resources with:
-```ps1
-.\scripts\teardown.ps1
-```
+
+- PowerShell:
+
+    ```ps1
+    .\Remove-Lab.ps1
+    ```
+
+- Azure CLI:
+
+    ```sh
+    ./remove_lab.sh
+    ```
