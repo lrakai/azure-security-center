@@ -115,6 +115,7 @@
                 "Microsoft.Network/publicIpAddresses",
                 "Microsoft.Network/networkInterfaces",
                 "Microsoft.Network/virtualNetworks",
+                "Microsoft.Network/virtualNetworks/subnets",
                 "Microsoft.Compute/virtualMachines/extensions",
                 "Microsoft.OperationalInsights/workspaces"
             ]
